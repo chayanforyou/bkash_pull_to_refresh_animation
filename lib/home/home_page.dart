@@ -1,8 +1,9 @@
-import 'package:easy_refresh/easy_refresh.dart';
+import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pull_refresh/home/widgets/home_content_2.dart';
 
-import 'pull_refresh/sunrise_header.dart';
+import 'pull_refresh/sunrise_indicator.dart';
 import 'widgets/home_content.dart';
 import 'widgets/home_header.dart';
 
@@ -14,23 +15,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late EasyRefreshController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = EasyRefreshController(
-        controlFinishRefresh: true,
-        controlFinishLoad: true
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -41,24 +25,29 @@ class _HomePageState extends State<HomePage> {
       ),
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: EasyRefresh(
-          controller: _controller,
-          header: const SunriseHeader(
-            position: IndicatorPosition.behind,
-            maxOverOffset: 45,
-            safeArea: false,
-          ),
+        body: CustomRefreshIndicator(
+          offsetToArmed: 200.0,
+          trailingScrollIndicatorVisible: false,
           onRefresh: () async {
             await Future.delayed(Duration(seconds: 4));
-            if (!mounted) return;
-
-            _controller.finishRefresh();
           },
-          child: Column(
-            children: [
-              HomeHeader(),
-              HomeContent(),
-            ],
+          durations: const RefreshIndicatorDurations(
+            settleDuration: Duration.zero,
+            finalizeDuration: Duration(milliseconds: 800),
+          ),
+          builder: (BuildContext context, Widget child, IndicatorController controller) {
+            print(controller.value);
+            return Stack(
+              children: [
+                SunriseIndicator(controller: controller),
+                Transform.translate(offset: Offset(0.0, controller.value * 25), child: child),
+                HomeHeader(),
+              ],
+            );
+          },
+          child: Padding(
+            padding: EdgeInsets.only(top: MediaQuery.sizeOf(context).height * 0.23),
+            child: HomeContent2(),
           ),
         ),
       ),

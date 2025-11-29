@@ -1,40 +1,35 @@
-import 'package:easy_refresh/easy_refresh.dart';
+import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
 
 class SunriseIndicator extends StatefulWidget {
-  final IndicatorState state;
-  final bool reverse;
+  final IndicatorController controller;
 
-  const SunriseIndicator({super.key, required this.state, required this.reverse});
+  const SunriseIndicator({super.key, required this.controller});
 
   @override
   State<SunriseIndicator> createState() => _SunriseIndicatorState();
 }
 
 class _SunriseIndicatorState extends State<SunriseIndicator> {
-  double get _offset => widget.state.offset;
-
-  double get _actualTriggerOffset => widget.state.actualTriggerOffset;
-
   SMINumber? pull;
   SMITrigger? loading;
   SMITrigger? finish;
-  StateMachineController? controller;
+  StateMachineController? riveController;
+  RiveFile? _riveFile;
+
+  IndicatorState get _state => widget.controller.state;
 
   @override
   void initState() {
     super.initState();
-    widget.state.notifier.addModeChangeListener(_onModeChange);
     _loadRiveFile();
+    widget.controller.addListener(_onControllerChange);
   }
-
-  RiveFile? _riveFile;
 
   void _loadRiveFile() {
     rootBundle.load('assets/rive/pull_refresh.riv').then((data) async {
-      // Load the RiveFile from the binary data.
       setState(() {
         _riveFile = RiveFile.import(data);
       });
@@ -43,39 +38,38 @@ class _SunriseIndicatorState extends State<SunriseIndicator> {
 
   @override
   void dispose() {
-    widget.state.notifier.removeModeChangeListener(_onModeChange);
-    controller?.dispose();
+    widget.controller.removeListener(_onControllerChange);
+    riveController?.dispose();
     super.dispose();
   }
 
-  void _onModeChange(IndicatorMode mode, double offset) {
-    switch (mode) {
-      case IndicatorMode.ready:
+  void _onControllerChange() {
+    switch (_state) {
+      case IndicatorState.settling:
         loading?.fire();
-      case IndicatorMode.processed:
+        break;
+      case IndicatorState.finalizing:
         finish?.fire();
-      case IndicatorMode.done:
+        break;
+      case IndicatorState.idle:
         pull?.value = 0;
+        break;
       default:
         break;
     }
   }
 
   @override
-  void didUpdateWidget(covariant SunriseIndicator oldWidget) {
-    if (pull != null) {
-      if (_offset < _actualTriggerOffset) {
-        pull?.value = _offset / _actualTriggerOffset * 100;
-      } else {
-        pull?.value = 100;
-      }
-    }
-    super.didUpdateWidget(oldWidget);
-  }
-
-
-  @override
   Widget build(BuildContext context) {
+    // if (_state == IndicatorState.dragging || _state == IndicatorState.armed) {
+    //   final value = (widget.controller.value * 100).clamp(0.0, 100.0);
+    //   pull?.value = value;
+    // }
+    if (pull != null) {
+      final value = (widget.controller.value * 100).clamp(0.0, 100.0);
+      pull?.value = value;
+    }
+
     final height = MediaQuery.sizeOf(context).height * 0.3;
 
     return SizedBox(
@@ -87,15 +81,15 @@ class _SunriseIndicatorState extends State<SunriseIndicator> {
               artboard: 'Artboard',
               fit: BoxFit.cover,
               onInit: (artboard) {
-                controller = StateMachineController.fromArtboard(artboard, 'Main')!;
-                controller?.isActive = true;
-                if (controller == null) {
+                riveController = StateMachineController.fromArtboard(artboard, 'Main')!;
+                riveController?.isActive = true;
+                if (riveController == null) {
                   throw Exception('Unable to initialize state machine controller');
                 }
-                artboard.addController(controller!);
-                pull = controller!.findInput<double>('pullAmount') as SMINumber;
-                loading = controller!.findInput<bool>('loadingTrigger') as SMITrigger;
-                finish = controller!.findInput<bool>('finishTrigger') as SMITrigger;
+                artboard.addController(riveController!);
+                pull = riveController!.findInput<double>('pullAmount') as SMINumber;
+                loading = riveController!.findInput<bool>('loadingTrigger') as SMITrigger;
+                finish = riveController!.findInput<bool>('finishTrigger') as SMITrigger;
               },
             )
           : const SizedBox.shrink(),

@@ -48,37 +48,39 @@ class _HomeContentState extends State<HomeContent> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: CustomScrollView(
-        slivers: [
-          SliverClip(
-            child: SliverToBoxAdapter(
-              child: Container(
-                color: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GridView.count(
-                      shrinkWrap: true,
-                      crossAxisCount: 4,
-                      padding: EdgeInsets.zero,
-                      physics: NeverScrollableScrollPhysics(),
-                      children: List.generate(homeMenuList.length, (index) {
-                        return Center(
-                          child: MenuWidget(
-                            title: homeMenuList[index].title,
-                            image: homeMenuList[index].icon,
-                          ),
-                        );
-                      }),
-                    ),
-                    // _buildImageSlider(),
-                  ],
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 12),
+      decoration: BoxDecoration(
+          color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        )
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GridView.count(
+            shrinkWrap: true,
+            crossAxisCount: 4,
+            padding: EdgeInsets.zero,
+            physics: NeverScrollableScrollPhysics(),
+            children: List.generate(homeMenuList.length, (index) {
+              return Center(
+                child: MenuWidget(
+                  title: homeMenuList[index].title,
+                  image: homeMenuList[index].icon,
                 ),
-              ),
-            ),
+              );
+            }),
           ),
+          _buildImageSlider(),
+          ...List.generate(50, (index) {
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text('Widget $index'),
+            );
+          }),
         ],
       ),
     );
