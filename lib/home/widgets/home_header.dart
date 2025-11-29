@@ -19,7 +19,7 @@ class _HomeHeaderState extends State<HomeHeader> with SingleTickerProviderStateM
   void initState() {
     super.initState();
 
-    _controller = AnimationController(duration: const Duration(milliseconds: 1200), vsync: this);
+    _controller = AnimationController(duration: const Duration(milliseconds: 800), vsync: this);
 
     _slideAnimation = Tween<double>(begin: 5, end: 100).animate(
       CurvedAnimation(

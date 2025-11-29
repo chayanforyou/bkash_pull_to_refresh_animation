@@ -16,8 +16,6 @@ class SunriseIndicator extends StatefulWidget {
 class _SunriseIndicatorState extends State<SunriseIndicator> {
   double get _offset => widget.state.offset;
 
-  IndicatorMode get _mode => widget.state.mode;
-
   double get _actualTriggerOffset => widget.state.actualTriggerOffset;
 
   SMINumber? pull;
@@ -64,15 +62,25 @@ class _SunriseIndicatorState extends State<SunriseIndicator> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    if (_mode == IndicatorMode.drag || _mode == IndicatorMode.armed) {
-      final percentage = (_offset / _actualTriggerOffset).clamp(0.0, 1.0) * 100;
-      pull?.value = percentage;
+  void didUpdateWidget(covariant SunriseIndicator oldWidget) {
+    if (pull != null) {
+      if (_offset < _actualTriggerOffset) {
+        pull?.value = _offset / _actualTriggerOffset * 100;
+      } else {
+        pull?.value = 100;
+      }
     }
+    super.didUpdateWidget(oldWidget);
+  }
 
+
+  @override
+  Widget build(BuildContext context) {
     final height = MediaQuery.sizeOf(context).height * 0.3;
+
     return SizedBox(
       height: height,
+      width: double.infinity,
       child: _riveFile != null
           ? RiveAnimation.direct(
               _riveFile!,

@@ -6,7 +6,7 @@ import 'sunrise_indicator.dart';
 class SunriseHeader extends Header {
   const SunriseHeader({
     super.clamping = false,
-    super.triggerOffset = 38,
+    super.triggerOffset = 40,
     super.maxOverOffset,
     super.position = IndicatorPosition.above,
     super.processedDuration = Duration.zero,
