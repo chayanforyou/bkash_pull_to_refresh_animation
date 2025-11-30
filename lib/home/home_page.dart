@@ -1,9 +1,8 @@
-import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pull_refresh/home/widgets/home_content_2.dart';
 
-import 'pull_refresh/sunrise_indicator.dart';
+import 'pull_refresh/sunrise_header.dart';
 import 'widgets/home_content.dart';
 import 'widgets/home_header.dart';
 
@@ -15,39 +14,54 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  late EasyRefreshController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = EasyRefreshController(
+        controlFinishRefresh: true,
+        controlFinishLoad: true
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
+        systemNavigationBarColor: Colors.pink,
+        systemNavigationBarDividerColor: Colors.pink,
+        systemNavigationBarIconBrightness: Brightness.light,
         statusBarIconBrightness: Brightness.light,
         statusBarBrightness: Brightness.dark,
       ),
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: CustomRefreshIndicator(
-          offsetToArmed: 200.0,
-          trailingScrollIndicatorVisible: false,
-          onRefresh: () async {
-            await Future.delayed(Duration(seconds: 4));
-          },
-          durations: const RefreshIndicatorDurations(
-            settleDuration: Duration.zero,
-            finalizeDuration: Duration(milliseconds: 800),
+        body: EasyRefresh(
+          controller: _controller,
+          header: const SunriseHeader(
+            position: IndicatorPosition.behind,
+            maxOverOffset: 50,
+            safeArea: false,
           ),
-          builder: (BuildContext context, Widget child, IndicatorController controller) {
-            print(controller.value);
-            return Stack(
-              children: [
-                SunriseIndicator(controller: controller),
-                Transform.translate(offset: Offset(0.0, controller.value * 25), child: child),
-                HomeHeader(),
-              ],
-            );
+          onRefresh: () async {
+            await Future.delayed(Duration(seconds: 3));
+            if (!mounted) return;
+
+            _controller.finishRefresh();
           },
-          child: Padding(
-            padding: EdgeInsets.only(top: MediaQuery.sizeOf(context).height * 0.23),
-            child: HomeContent2(),
+          child: Column(
+            children: [
+              HomeHeader(),
+              HomeContent(),
+            ],
           ),
         ),
       ),

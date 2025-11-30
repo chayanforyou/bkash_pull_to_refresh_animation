@@ -31,14 +31,22 @@ class _HomeHeaderState extends State<HomeHeader> with SingleTickerProviderStateM
     _fadeOutTapText = Tween<double>(begin: 1.0, end: 0.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: Curves.easeOut,
+        curve: const Interval(
+          0.0,
+          0.85,
+          curve: Curves.easeInOutCubic,
+        ),
       ),
     );
 
     _fadeInBalance = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: Curves.easeInOut,
+        curve: const Interval(
+          0.15,
+          1.0,
+          curve: Curves.easeInOutCubic,
+        ),
       ),
     );
 
@@ -79,10 +87,17 @@ class _HomeHeaderState extends State<HomeHeader> with SingleTickerProviderStateM
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const CircleAvatar(
-              radius: 24.0,
-              backgroundColor: Colors.grey,
-              backgroundImage: AssetImage('assets/images/profile.jpg'),
+            Container(
+              padding: const EdgeInsets.all(1),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
+              child: const CircleAvatar(
+                radius: 24.0,
+                backgroundColor: Colors.grey,
+                backgroundImage: AssetImage('assets/images/profile.jpg'),
+              ),
             ),
             const SizedBox(width: 10),
             Column(
