@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sizer/sizer.dart';
 
 class HomeHeader extends StatefulWidget {
   const HomeHeader({super.key});
@@ -21,32 +22,22 @@ class _HomeHeaderState extends State<HomeHeader> with SingleTickerProviderStateM
 
     _controller = AnimationController(duration: const Duration(milliseconds: 800), vsync: this);
 
-    _slideAnimation = Tween<double>(begin: 5, end: 100).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.fastOutSlowIn,
-      ),
-    );
+    _slideAnimation = Tween<double>(
+      begin: 4,
+      end: 102,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.fastOutSlowIn));
 
     _fadeOutTapText = Tween<double>(begin: 1.0, end: 0.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(
-          0.0,
-          0.85,
-          curve: Curves.easeInOutCubic,
-        ),
+        curve: const Interval(0.0, 0.85, curve: Curves.easeInOutCubic),
       ),
     );
 
     _fadeInBalance = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(
-          0.15,
-          1.0,
-          curve: Curves.easeInOutCubic,
-        ),
+        curve: const Interval(0.15, 1.0, curve: Curves.easeInOutCubic),
       ),
     );
 
@@ -77,22 +68,17 @@ class _HomeHeaderState extends State<HomeHeader> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.sizeOf(context).height * 0.23;
-
     return SizedBox(
-      height: height,
-      width: double.infinity,
+      height: 27.h,
+      width: 100.w,
       child: Padding(
-        padding: const EdgeInsets.only(top: 18, left: 16, right: 16),
+        padding: const EdgeInsets.only(left: 16, right: 16),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
               padding: const EdgeInsets.all(1),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-              ),
+              decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle),
               child: const CircleAvatar(
                 radius: 24.0,
                 backgroundColor: Colors.grey,
@@ -104,20 +90,25 @@ class _HomeHeaderState extends State<HomeHeader> with SingleTickerProviderStateM
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
+                Text(
                   'Chayan Mistry',
-                  style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 5),
                 InkWell(
                   onTap: _handleTap,
                   borderRadius: BorderRadius.circular(8),
                   child: Container(
-                    width: 125,
+                    width: 128,
                     height: 28,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: Colors.black12)
                     ),
                     child: Stack(
                       alignment: Alignment.center,
@@ -126,18 +117,15 @@ class _HomeHeaderState extends State<HomeHeader> with SingleTickerProviderStateM
                         AnimatedBuilder(
                           animation: _controller,
                           builder: (context, child) {
-                            return Opacity(
-                              opacity: _fadeOutTapText.value,
-                              child: child!,
-                            );
+                            return Opacity(opacity: _fadeOutTapText.value, child: child!);
                           },
-                          child: const Padding(
+                          child: Padding(
                             padding: EdgeInsets.only(left: 20),
                             child: Text(
                               'Tap for balance',
                               style: TextStyle(
                                 color: Colors.black,
-                                fontSize: 12,
+                                fontSize: 14.5.sp,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -148,18 +136,15 @@ class _HomeHeaderState extends State<HomeHeader> with SingleTickerProviderStateM
                         AnimatedBuilder(
                           animation: _controller,
                           builder: (context, child) {
-                            return Opacity(
-                              opacity: _fadeInBalance.value,
-                              child: child!,
-                            );
+                            return Opacity(opacity: _fadeInBalance.value, child: child!);
                           },
-                          child: const Padding(
+                          child: Padding(
                             padding: EdgeInsets.only(right: 20),
                             child: Text(
                               '৳ 500.00',
                               style: TextStyle(
                                 color: Colors.black,
-                                fontSize: 12,
+                                fontSize: 14.5.sp,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -171,7 +156,7 @@ class _HomeHeaderState extends State<HomeHeader> with SingleTickerProviderStateM
                           animation: _controller,
                           builder: (context, child) {
                             return Positioned(
-                              left: _showBalance ? _slideAnimation.value : 5,
+                              left: _showBalance ? _slideAnimation.value : 4,
                               child: child!,
                             );
                           },
@@ -183,9 +168,9 @@ class _HomeHeaderState extends State<HomeHeader> with SingleTickerProviderStateM
                               color: Colors.pink,
                               borderRadius: BorderRadius.circular(6),
                             ),
-                            child: const Text(
+                            child: Text(
                               '৳',
-                              style: TextStyle(color: Colors.white, fontSize: 16),
+                              style: TextStyle(color: Colors.white, fontSize: 16.sp),
                             ),
                           ),
                         ),
@@ -196,20 +181,40 @@ class _HomeHeaderState extends State<HomeHeader> with SingleTickerProviderStateM
               ],
             ),
             const Spacer(),
-            _roundIcon(icon: Icons.search),
+            IconButton(
+              onPressed: () {},
+              icon: Icon(Icons.search),
+              style: IconButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+              ),
+            ),
             const SizedBox(width: 10),
-            _roundIcon(icon: Icons.more_horiz),
+            Stack(
+              children: [
+                IconButton(
+                  onPressed: () {},
+                  icon: Image.asset('assets/images/logo.png', height: 18),
+                  style: IconButton.styleFrom(backgroundColor: Colors.white),
+                ),
+                Positioned(
+                  bottom: 3,
+                  right: 3,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.black12),
+                    ),
+                    padding: const EdgeInsets.all(3),
+                    child: Icon(Icons.menu, size: 10),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _roundIcon({required IconData icon}) {
-    return Container(
-      decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-      padding: const EdgeInsets.all(10),
-      child: Icon(icon, size: 22, color: Colors.black87),
     );
   }
 }

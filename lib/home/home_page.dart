@@ -48,7 +48,7 @@ class _HomePageState extends State<HomePage> {
           controller: _controller,
           header: const SunriseHeader(
             position: IndicatorPosition.behind,
-            maxOverOffset: 50,
+            maxOverOffset: 45,
             safeArea: false,
           ),
           onRefresh: () async {

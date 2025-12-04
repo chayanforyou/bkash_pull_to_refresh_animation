@@ -11,7 +11,13 @@ class BottomClampScrollPhysics extends ScrollPhysics {
   @override
   double applyBoundaryConditions(ScrollMetrics position, double value) {
     // Hard clamp bottom (no overscroll)
-    if (value > position.maxScrollExtent) {
+    if (position.maxScrollExtent <= position.pixels && position.pixels < value) {
+      // Overscroll.
+      return value - position.pixels;
+    }
+
+    if (position.pixels < position.maxScrollExtent && position.maxScrollExtent < value) {
+      // Hit bottom edge.
       return value - position.maxScrollExtent;
     }
 
