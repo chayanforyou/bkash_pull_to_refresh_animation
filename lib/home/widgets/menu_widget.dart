@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sizer/sizer.dart';
 
 class MenuWidget extends StatelessWidget {
   final String title;
@@ -10,11 +11,11 @@ class MenuWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Image.asset(image, scale: 2.0),
-        SizedBox(height: 5.0),
+        Image.asset(image, height: 55),
+        const SizedBox(height: 5.0),
         Text(
           title,
-          style: const TextStyle(fontSize: 12, color: Colors.black),
+          style: TextStyle(fontSize: 14.5.sp, wordSpacing: 0.5, color: Colors.black),
           overflow: TextOverflow.ellipsis,
         ),
       ],

@@ -2,6 +2,7 @@ import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
+import 'package:sizer/sizer.dart';
 
 class SunriseIndicator extends StatefulWidget {
   final IndicatorState state;
@@ -76,8 +77,8 @@ class _SunriseIndicatorState extends State<SunriseIndicator> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: MediaQuery.sizeOf(context).height * 0.3,
-      width: double.infinity,
+      height: 35.h,
+      width: 100.w,
       child: _riveFile != null
           ? RiveAnimation.direct(
         _riveFile!,
