@@ -1,5 +1,5 @@
 name: pull_refresh
-description: "A new Flutter project."
+description: "This Flutter project showcases a custom pull-to-refresh implementation inspired by the bKash app's smooth and engaging animation."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -38,7 +38,6 @@ dependencies:
   rive: ^0.13.20
   easy_refresh: ^3.4.0
   carousel_slider: ^5.1.1
-  sliver_tools: ^0.2.12
 
 dev_dependencies:
   flutter_test:
