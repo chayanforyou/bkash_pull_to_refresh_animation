@@ -69,7 +69,7 @@ class _HomeHeaderState extends State<HomeHeader> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 27.h,
+      height: 22.h,
       width: 100.w,
       child: Padding(
         padding: const EdgeInsets.only(left: 16, right: 16),

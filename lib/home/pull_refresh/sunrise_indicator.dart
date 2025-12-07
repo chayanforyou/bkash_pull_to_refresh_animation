@@ -77,13 +77,13 @@ class _SunriseIndicatorState extends State<SunriseIndicator> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 35.h,
+      height: 27.h,
       width: 100.w,
       child: _riveFile != null
           ? RiveAnimation.direct(
         _riveFile!,
         artboard: 'Artboard',
-        fit: BoxFit.cover,
+        fit: BoxFit.fitWidth,
         onInit: (artboard) {
           controller = StateMachineController.fromArtboard(artboard, 'Main')!;
           controller?.isActive = true;
