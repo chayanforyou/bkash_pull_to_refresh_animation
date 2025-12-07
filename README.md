@@ -4,7 +4,7 @@ This Flutter project showcases a custom pull-to-refresh implementation inspired 
 
 ## Preview
 
-[Video]
+https://github.com/user-attachments/assets/54571159-6805-41bd-b16b-5d602a8a7bbc
 
 ## Features
 
