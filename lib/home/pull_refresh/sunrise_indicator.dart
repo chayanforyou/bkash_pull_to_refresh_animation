@@ -1,6 +1,5 @@
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
 import 'package:sizer/sizer.dart';
 
@@ -8,17 +7,25 @@ class SunriseIndicator extends StatefulWidget {
   final IndicatorState state;
   final bool reverse;
 
-  const SunriseIndicator({super.key, required this.state, required this.reverse});
+  const SunriseIndicator({
+    super.key,
+    required this.state,
+    required this.reverse,
+  });
 
   @override
   State<SunriseIndicator> createState() => _SunriseIndicatorState();
 }
 
 class _SunriseIndicatorState extends State<SunriseIndicator> {
-  SMINumber? pull;
-  SMITrigger? loading;
-  SMITrigger? finish;
-  StateMachineController? controller;
+  late final FileLoader _fileLoader = FileLoader.fromAsset(
+    'assets/rive/pull_refresh.riv',
+    riveFactory: Factory.flutter,
+  );
+
+  NumberInput? _pullAmount;
+  TriggerInput? _loadingTrigger;
+  TriggerInput? _finishTrigger;
 
   double get _offset => widget.state.offset;
 
@@ -28,35 +35,34 @@ class _SunriseIndicatorState extends State<SunriseIndicator> {
   void initState() {
     super.initState();
     widget.state.notifier.addModeChangeListener(_onModeChange);
-    _loadRiveFile();
-  }
-
-  RiveFile? _riveFile;
-
-  void _loadRiveFile() {
-    rootBundle.load('assets/rive/pull_refresh.riv').then((data) async {
-      // Load the RiveFile from the binary data.
-      setState(() {
-        _riveFile = RiveFile.import(data);
-      });
-    });
   }
 
   @override
   void dispose() {
     widget.state.notifier.removeModeChangeListener(_onModeChange);
-    controller?.dispose();
+    _fileLoader.dispose();
     super.dispose();
+  }
+
+  void _onLoaded(RiveLoaded state) {
+    // Access inputs via stateMachine
+    final sm = state.controller.stateMachine;
+    _pullAmount = sm.number('pullAmount');
+    _loadingTrigger = sm.trigger('loadingTrigger');
+    _finishTrigger = sm.trigger('finishTrigger');
   }
 
   void _onModeChange(IndicatorMode mode, double offset) {
     switch (mode) {
       case IndicatorMode.ready:
-        loading?.fire();
+        _loadingTrigger?.fire();
+        break;
       case IndicatorMode.processed:
-        finish?.fire();
+        _finishTrigger?.fire();
+        break;
       case IndicatorMode.done:
-        pull?.value = 0;
+        _pullAmount?.value = 0;
+        break;
       default:
         break;
     }
@@ -64,14 +70,14 @@ class _SunriseIndicatorState extends State<SunriseIndicator> {
 
   @override
   void didUpdateWidget(covariant SunriseIndicator oldWidget) {
-    if (pull != null) {
+    super.didUpdateWidget(oldWidget);
+    if (_pullAmount != null) {
       if (_offset < _actualTriggerOffset) {
-        pull?.value = _offset / _actualTriggerOffset * 100;
+        _pullAmount?.value = _offset / _actualTriggerOffset * 100;
       } else {
-        pull?.value = 100;
+        _pullAmount?.value = 100;
       }
     }
-    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -79,24 +85,23 @@ class _SunriseIndicatorState extends State<SunriseIndicator> {
     return SizedBox(
       height: 27.h,
       width: 100.w,
-      child: _riveFile != null
-          ? RiveAnimation.direct(
-        _riveFile!,
-        artboard: 'Artboard',
-        fit: BoxFit.fitWidth,
-        onInit: (artboard) {
-          controller = StateMachineController.fromArtboard(artboard, 'Main')!;
-          controller?.isActive = true;
-          if (controller == null) {
-            throw Exception('Unable to initialize state machine controller');
-          }
-          artboard.addController(controller!);
-          pull = controller!.findInput<double>('pullAmount') as SMINumber;
-          loading = controller!.findInput<bool>('loadingTrigger') as SMITrigger;
-          finish = controller!.findInput<bool>('finishTrigger') as SMITrigger;
+      child: RiveWidgetBuilder(
+        fileLoader: _fileLoader,
+        artboardSelector: ArtboardSelector.byName('Artboard'),
+        stateMachineSelector: StateMachineSelector.byName('Main'),
+        onLoaded: _onLoaded,
+        builder: (_, state) => switch (state) {
+          RiveLoading() => const Center(child: CircularProgressIndicator()),
+          RiveFailed() => ErrorWidget.withDetails(
+            message: state.error.toString(),
+            error: FlutterError(state.error.toString()),
+          ),
+          RiveLoaded() => RiveWidget(
+            controller: state.controller,
+            fit: Fit.fitWidth,
+          ),
         },
-      )
-          : const SizedBox.shrink(),
+      ),
     );
   }
 }
