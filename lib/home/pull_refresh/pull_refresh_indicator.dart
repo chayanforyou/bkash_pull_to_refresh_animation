@@ -1,23 +1,19 @@
-import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 import 'package:sizer/sizer.dart';
 
-class SunriseIndicator extends StatefulWidget {
-  final IndicatorState state;
-  final bool reverse;
+import 'pull_refresh_controller.dart';
 
-  const SunriseIndicator({
-    super.key,
-    required this.state,
-    required this.reverse,
-  });
+class PullRefreshIndicator extends StatefulWidget {
+  final PullRefreshController controller;
+
+  const PullRefreshIndicator({super.key, required this.controller});
 
   @override
-  State<SunriseIndicator> createState() => _SunriseIndicatorState();
+  State<PullRefreshIndicator> createState() => _PullRefreshIndicatorState();
 }
 
-class _SunriseIndicatorState extends State<SunriseIndicator> {
+class _PullRefreshIndicatorState extends State<PullRefreshIndicator> {
   late final FileLoader _fileLoader = FileLoader.fromAsset(
     'assets/rive/pull_refresh.riv',
     riveFactory: Factory.flutter,
@@ -27,71 +23,61 @@ class _SunriseIndicatorState extends State<SunriseIndicator> {
   TriggerInput? _loadingTrigger;
   TriggerInput? _finishTrigger;
 
-  double get _offset => widget.state.offset;
-
-  double get _actualTriggerOffset => widget.state.actualTriggerOffset;
+  late PullRefreshMode _mode = widget.controller.mode;
 
   @override
   void initState() {
     super.initState();
-    widget.state.notifier.addModeChangeListener(_onModeChange);
+    widget.controller.addListener(_onChanged);
   }
 
   @override
   void dispose() {
-    widget.state.notifier.removeModeChangeListener(_onModeChange);
+    widget.controller.removeListener(_onChanged);
     _fileLoader.dispose();
     super.dispose();
   }
 
   void _onLoaded(RiveLoaded state) {
-    // Access inputs via stateMachine
     final sm = state.controller.stateMachine;
     _pullAmount = sm.number('pullAmount');
     _loadingTrigger = sm.trigger('loadingTrigger');
     _finishTrigger = sm.trigger('finishTrigger');
   }
 
-  void _onModeChange(IndicatorMode mode, double offset) {
-    switch (mode) {
-      case IndicatorMode.ready:
-        _loadingTrigger?.fire();
-        break;
-      case IndicatorMode.processed:
-        _finishTrigger?.fire();
-        break;
-      case IndicatorMode.done:
-        _pullAmount?.value = 0;
-        break;
-      default:
-        break;
-    }
-  }
+  void _onChanged() {
+    final controller = widget.controller;
 
-  @override
-  void didUpdateWidget(covariant SunriseIndicator oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (_pullAmount != null) {
-      if (_offset < _actualTriggerOffset) {
-        _pullAmount?.value = _offset / _actualTriggerOffset * 100;
-      } else {
-        _pullAmount?.value = 100;
+    if (controller.mode != _mode) {
+      _mode = controller.mode;
+      switch (_mode) {
+        case PullRefreshMode.refreshing:
+          _loadingTrigger?.fire();
+          break;
+        case PullRefreshMode.finishing:
+          _finishTrigger?.fire();
+          break;
+        case PullRefreshMode.idle:
+          _pullAmount?.value = 0;
+          return;
       }
     }
+
+    final progress = controller.offset / controller.triggerOffset * 100;
+    _pullAmount?.value = progress.clamp(0.0, 100.0);
   }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 27.h,
-      width: 100.w,
       child: RiveWidgetBuilder(
         fileLoader: _fileLoader,
         artboardSelector: ArtboardSelector.byName('Artboard'),
         stateMachineSelector: StateMachineSelector.byName('Main'),
         onLoaded: _onLoaded,
         builder: (_, state) => switch (state) {
-          RiveLoading() => const Center(child: CircularProgressIndicator()),
+          RiveLoading() => const SizedBox.shrink(),
           RiveFailed() => ErrorWidget.withDetails(
             message: state.error.toString(),
             error: FlutterError(state.error.toString()),

@@ -6,7 +6,12 @@ class QuickFeatureWidget extends StatelessWidget {
   final String image;
   final Color? color;
 
-  const QuickFeatureWidget({super.key, required this.title, required this.image, this.color});
+  const QuickFeatureWidget({
+    super.key,
+    required this.title,
+    required this.image,
+    this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +30,11 @@ class QuickFeatureWidget extends StatelessWidget {
           SizedBox(height: 20.0),
           Text(
             title,
-            style: TextStyle(fontSize: 16.sp, color: Colors.black, fontWeight: FontWeight.w500),
+            style: TextStyle(
+              fontSize: 16.sp,
+              color: Colors.black,
+              fontWeight: FontWeight.w500,
+            ),
             overflow: TextOverflow.ellipsis,
           ),
         ],
