@@ -37,4 +37,36 @@ enum HomeMenu {
   final Color? color;
 
   const HomeMenu({required this.title, required this.icon, this.color});
+
+  static const mainMenus = [
+    sendMoney,
+    mobileRecharge,
+    cashOut,
+    makePayment,
+    addMoney,
+    payBill,
+    savings,
+    loan,
+    tickets,
+    bkashToBank,
+    educationFee,
+    microfinance,
+    toll,
+    requestMoney,
+    remittance,
+    donation,
+  ];
+
+  static const quickFeatures = [myOffers, coupons, rewards];
+
+  static const suggestions = [
+    btcl,
+    akash,
+    ajkelDeal,
+    daraz,
+    styline,
+    metlife,
+    btcl,
+    daraz,
+  ];
 }

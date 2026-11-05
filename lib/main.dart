@@ -13,8 +13,6 @@ class MyApp extends StatelessWidget {
       builder: (context, orientation, screenType) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          themeMode: ThemeMode.light,
-          darkTheme: ThemeData.dark(useMaterial3: true),
           home: const HomePage(),
         );
       },

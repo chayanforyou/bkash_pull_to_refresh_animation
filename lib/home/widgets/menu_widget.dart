@@ -15,7 +15,11 @@ class MenuWidget extends StatelessWidget {
         const SizedBox(height: 5.0),
         Text(
           title,
-          style: TextStyle(fontSize: 14.5.sp, wordSpacing: 0.5, color: Colors.black),
+          style: TextStyle(
+            fontSize: 14.5.sp,
+            wordSpacing: 0.5,
+            color: Colors.black,
+          ),
           overflow: TextOverflow.ellipsis,
         ),
       ],

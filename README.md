@@ -17,7 +17,17 @@ https://github.com/user-attachments/assets/54571159-6805-41bd-b16b-5d602a8a7bbc
 
 [Download APK](https://github.com/chayanforyou/bkash_pull_to_refresh_animation/releases/latest)
 
+## How It Works
+
+Pull-to-refresh is built from scratch in `lib/pull_refresh/`, with no refresh package:
+
+- `pull_refresh_controller.dart` - Refresh state (idle, refreshing, finishing) and timing
+- `pull_refresh_physics.dart` - Pull resistance, speed cap, and spring back
+- `pull_refresh_scroll_view.dart` - Scroll view wired to the controller and physics
+- `pull_refresh_indicator.dart` - Drives the Rive animation from pull distance and state
+
 ## Packages Used
 
 - **rive** - For real-time interactive animation
-- **easy_refresh** - For pull-down refresh animation implementations
+- **sizer** - For screen-relative sizes
+- **carousel_slider** - For the banner carousel
